@@ -147,6 +147,62 @@ CUDA_VISIBLE_DEVICES=0,1,2,3 PORT=29588 bash tools/dist_train.sh configs/LOD/SpR
 If you want to editing the code or find out details of RAW-Adapter, direct refer to [mmdet/models/backbones/RAW_Adapter](mmdet/models/backbones/RAW_Adapter) and [mmdet/models/backbones/RAW_resnet.py](mmdet/models/backbones/RAW_resnet.py).
 
 
+### 📖 6: Add KITTI Training / Testing (for DRL-ISP style workflow)
+
+If you also want to train/test on KITTI (e.g., combined with DRL-ISP preprocessing), we provide a converter and a detector config.
+
+#### 6.1 Prepare KITTI folders
+
+Place KITTI under `./data/KITTI` with this structure:
+
+```
+-- data
+   -- KITTI
+      -- training
+         -- image_2
+         -- label_2
+      -- ImageSets
+         -- train.txt
+         -- val.txt
+```
+
+`train.txt` and `val.txt` should contain image ids (without extension), one id per line.
+
+#### 6.2 Convert KITTI labels to COCO json
+
+Run:
+
+```bash
+python tools/dataset_converters/kitti2coco.py \
+  --data-root ./data/KITTI \
+  --split-file ./data/KITTI/ImageSets/train.txt \
+  --out-file ./data/KITTI/annotations/kitti_train.json
+
+python tools/dataset_converters/kitti2coco.py \
+  --data-root ./data/KITTI \
+  --split-file ./data/KITTI/ImageSets/val.txt \
+  --out-file ./data/KITTI/annotations/kitti_val.json
+```
+
+By default, classes are:
+
+`Car Van Truck Pedestrian Person_sitting Cyclist Tram Misc`
+
+#### 6.3 Train on KITTI
+
+```bash
+python tools/train.py configs/KITTI/retinanet_raw_adapter_res18.py
+```
+
+#### 6.4 Test on KITTI
+
+```bash
+python tools/test.py configs/KITTI/retinanet_raw_adapter_res18.py <your_checkpoint.pth>
+```
+
+If you need only inference visualization, add `--show-dir` in test command.
+
+
 ### 📖 Acknowledgement:
 
 We thanks mmdetection & LOD & PASCAL RAW for their excellent code base & dataset.
