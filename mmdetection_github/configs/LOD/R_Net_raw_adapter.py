@@ -89,7 +89,8 @@ model = dict(
 
 
 dataset_type = 'LOD_Dataset'
-data_root = './data/LOD_BMVC2021/'
+# data_root = './data/LOD_BMVC2021/'
+data_root = '/home/jing/datasets/LOD_BMVC2021/LOD_BMVC2021/'
 
 backend_args = None
 
@@ -177,7 +178,7 @@ optim_wrapper = dict(
     optimizer=dict(type='SGD', lr=0.001, momentum=0.9, weight_decay=0.0001),
     clip_grad=dict(max_norm=35, norm_type=2))
 
-max_epochs = 7  # the real epoch is 7*5 = 35
+max_epochs = 20  # the real epoch is 7*5 = 35
 # learning policy
 # Based on the default settings of modern detectors, we added warmup settings.
 param_scheduler = [
