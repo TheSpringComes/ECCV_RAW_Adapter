@@ -135,6 +135,12 @@ python tools/train.py configs/PASCALRAW_Res18/Low_Light_raw_adapter_res18.py   #
 python tools/train.py configs/PASCALRAW_Res18/Over_Exp_raw_adapter_res50.py   ## Over-exposure
 ```
 
+YOLOv3 detector (keeping the original COCO json data loading settings, only replacing detector head):
+
+```
+python tools/train.py configs/COCO/COCO_YOLOV3_raw_adapter.py
+```
+
 We default train all SP-RCNN model on 4 GPUs: (LOD dataset, RAW-Adapter for example)
 
 ```
