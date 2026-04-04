@@ -141,6 +141,25 @@ YOLOv3 detector (keeping the original COCO json data loading settings, only repl
 python tools/train.py configs/COCO/COCO_YOLOV3_raw_adapter.py
 ```
 
+Other YOLOv3 configs for all supported RAW-Adapter datasets are also provided:
+
+```
+# LOD
+python tools/train.py configs/LOD/YOLOV3_raw_adapter.py
+
+# PASCAL RAW (Res18 / Res50, normal / low / over-exposure)
+python tools/train.py configs/PASCALRAW_Res18/Normal_Light_yolov3_raw_adapter_res18.py
+python tools/train.py configs/PASCALRAW_Res18/Low_Light_yolov3_raw_adapter_res18.py
+python tools/train.py configs/PASCALRAW_Res18/Over_Exp_yolov3_raw_adapter_res18.py
+python tools/train.py configs/PASCALRAW_Res50/Normal_Light_yolov3_raw_adapter_res50.py
+python tools/train.py configs/PASCALRAW_Res50/Low_Light_yolov3_raw_adapter_res50.py
+python tools/train.py configs/PASCALRAW_Res50/Over_Exp_yolov3_raw_adapter_res50.py
+
+# KITTI
+python tools/train.py configs/KITTI/yolov3_raw_adapter_res18.py
+python tools/train.py configs/KITTI/yolov3_raw_adapter_res50.py
+```
+
 We default train all SP-RCNN model on 4 GPUs: (LOD dataset, RAW-Adapter for example)
 
 ```
