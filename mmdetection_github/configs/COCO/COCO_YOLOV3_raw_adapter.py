@@ -12,17 +12,30 @@ _base_ = [
 model = dict(
     type='YOLOV3',
     data_preprocessor={'type': 'DetDataPreprocessor', 'mean': [0.0, 0.0, 0.0], 'std': [255.0, 255.0, 255.0], 'bgr_to_rgb': True, 'pad_size_divisor': 32},
-    backbone={'type': 'RAW_ResNet', 'depth': 50, 'num_stages': 4, 'out_indices': (1, 2, 3), 'lut_dim': 32, 'k_size': 9, 'fea_c_s': [256, 512, 1024], 'ada_c_s': [24, 48, 96], 'mid_c_s': [64, 64, 128], 'w_lut': True, 'merge_ratio': 1, 'light_mode': {'type': 'normal'}, 'frozen_stages': -1, 'norm_cfg': {'type': 'BN', 'requires_grad': True}, 'norm_eval': True, 'style': 'pytorch', 'init_cfg': {'type': 'Pretrained', 'checkpoint': 'torchvision://resnet50'}},
+    backbone=dict(
+        type='Darknet',
+        depth=53,
+        out_indices=(3, 4, 5),
+        frozen_stages=-1,
+        norm_cfg=dict(type='BN', requires_grad=True),
+        norm_eval=True),
     neck=dict(
         type='YOLOV3Neck',
         num_scales=3,
-        in_channels=[2048, 1024, 512],
+        in_channels=[1024, 512, 256],
         out_channels=[1024, 512, 256]),
     bbox_head=dict(
         type='YOLOV3Head',
         num_classes=80,
         in_channels=[1024, 512, 256],
         out_channels=[1024, 512, 256],
+        anchor_generator=dict(
+            type='YOLOAnchorGenerator',
+            # mmdet uses [P5, P4, P3] order for featmap_strides [32, 16, 8].
+            base_sizes=[[(116, 90), (156, 198), (373, 326)],
+                        [(30, 61), (62, 45), (59, 119)],
+                        [(10, 13), (16, 30), (33, 23)]],
+            strides=[32, 16, 8]),
         featmap_strides=[32, 16, 8]),
     train_cfg=dict(
         assigner=dict(
