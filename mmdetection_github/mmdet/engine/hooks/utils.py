@@ -5,6 +5,7 @@ def trigger_visualization_hook(cfg, args):
         visualization_hook = default_hooks['visualization']
         # Turn on visualization
         visualization_hook['draw'] = True
+        visualization_hook['vis_mode'] = args.vis_mode
         if args.show:
             visualization_hook['show'] = True
             visualization_hook['wait_time'] = args.wait_time

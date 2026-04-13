@@ -36,6 +36,14 @@ def parse_args():
         'If specified, it will be automatically saved '
         'to the work_dir/timestamp/show_dir')
     parser.add_argument(
+        '--vis-mode',
+        default='both',
+        choices=['pred', 'gt', 'both', 'concat'],
+        help='visualization output mode when used with --show/--show-dir: '
+        '"pred" saves or draws only predictions, "gt" only ground truth, '
+        '"both" saves gt/ and pred/ separately, and "concat" keeps the '
+        'original stitched visualization')
+    parser.add_argument(
         '--wait-time', type=float, default=2, help='the interval of show (s)')
     parser.add_argument(
         '--cfg-options',

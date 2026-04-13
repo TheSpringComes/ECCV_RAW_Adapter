@@ -42,6 +42,10 @@ class DetVisualizationHook(Hook):
         interval (int): The interval of visualization. Defaults to 50.
         score_thr (float): The threshold to visualize the bboxes
             and masks. Defaults to 0.3.
+        vis_mode (str): Visualization mode. "pred" draws only predictions,
+            "gt" draws only ground truth, "both" saves GT and prediction
+            images separately when ``test_out_dir`` is specified, and
+            "concat" keeps the original stitched output. Defaults to "both".
         show (bool): Whether to display the drawn image. Default to False.
         wait_time (float): The interval of show (s). Defaults to 0.
         test_out_dir (str, optional): directory where painted images
@@ -54,6 +58,7 @@ class DetVisualizationHook(Hook):
                  draw: bool = False,
                  interval: int = 50,
                  score_thr: float = 0.3,
+                 vis_mode: str = 'both',
                  show: bool = False,
                  wait_time: float = 0.,
                  test_out_dir: Optional[str] = None,
@@ -61,6 +66,7 @@ class DetVisualizationHook(Hook):
         self._visualizer: Visualizer = Visualizer.get_current_instance()
         self.interval = interval
         self.score_thr = score_thr
+        self.vis_mode = vis_mode
         self.show = show
         if self.show:
             # No need to think about vis backends.
@@ -104,6 +110,8 @@ class DetVisualizationHook(Hook):
                 osp.basename(img_path) if self.show else 'val_img',
                 img,
                 data_sample=outputs[0],
+                draw_gt=self.vis_mode in ('gt', 'both', 'concat'),
+                draw_pred=self.vis_mode in ('pred', 'both', 'concat'),
                 show=self.show,
                 wait_time=self.wait_time,
                 pred_score_thr=self.score_thr,
@@ -139,18 +147,34 @@ class DetVisualizationHook(Hook):
             img = mmcv.imfrombytes(img_bytes, channel_order='rgb')
 
             out_file = None
+            out_file_gt = None
+            out_file_pred = None
             if self.test_out_dir is not None:
-                out_file = osp.basename(img_path)
-                out_file = osp.join(self.test_out_dir, out_file)
+                basename = osp.basename(img_path)
+                if self.vis_mode == 'concat':
+                    out_file = osp.join(self.test_out_dir, basename)
+                else:
+                    if self.vis_mode in ('gt', 'both'):
+                        gt_dir = osp.join(self.test_out_dir, 'gt')
+                        mkdir_or_exist(gt_dir)
+                        out_file_gt = osp.join(gt_dir, basename)
+                    if self.vis_mode in ('pred', 'both'):
+                        pred_dir = osp.join(self.test_out_dir, 'pred')
+                        mkdir_or_exist(pred_dir)
+                        out_file_pred = osp.join(pred_dir, basename)
 
             self._visualizer.add_datasample(
                 osp.basename(img_path) if self.show else 'test_img',
                 img,
                 data_sample=data_sample,
+                draw_gt=self.vis_mode in ('gt', 'both', 'concat'),
+                draw_pred=self.vis_mode in ('pred', 'both', 'concat'),
                 show=self.show,
                 wait_time=self.wait_time,
                 pred_score_thr=self.score_thr,
                 out_file=out_file,
+                out_file_gt=out_file_gt,
+                out_file_pred=out_file_pred,
                 step=self._test_index)
 
 

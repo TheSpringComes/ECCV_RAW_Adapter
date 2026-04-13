@@ -161,7 +161,8 @@ class DetLocalVisualizer(Visualizer):
                     label_text,
                     pos,
                     colors=text_colors[i],
-                    font_sizes=int(13 * scales[i]),
+                    # font_sizes=int(13 * scales[i]),
+                    font_sizes=int(10 * scales[i]),
                     bboxes=[{
                         'facecolor': 'black',
                         'alpha': 0.8,
@@ -402,6 +403,8 @@ class DetLocalVisualizer(Visualizer):
             wait_time: float = 0,
             # TODO: Supported in mmengine's Viusalizer.
             out_file: Optional[str] = None,
+            out_file_gt: Optional[str] = None,
+            out_file_pred: Optional[str] = None,
             pred_score_thr: float = 0.3,
             step: int = 0) -> None:
         """Draw datasample and save to all backends.
@@ -427,6 +430,10 @@ class DetLocalVisualizer(Visualizer):
             show (bool): Whether to display the drawn image. Default to False.
             wait_time (float): The interval of show (s). Defaults to 0.
             out_file (str): Path to output file. Defaults to None.
+            out_file_gt (str): Path to save the ground-truth-only image.
+                Defaults to None.
+            out_file_pred (str): Path to save the prediction-only image.
+                Defaults to None.
             pred_score_thr (float): The threshold to visualize the bboxes
                 and masks. Defaults to 0.3.
             step (int): Global step value to record. Defaults to 0.
@@ -501,9 +508,14 @@ class DetLocalVisualizer(Visualizer):
         if show:
             self.show(drawn_img, win_name=name, wait_time=wait_time)
 
+        if out_file_gt is not None and gt_img_data is not None:
+            mmcv.imwrite(gt_img_data[..., ::-1], out_file_gt)
+        if out_file_pred is not None and pred_img_data is not None:
+            mmcv.imwrite(pred_img_data[..., ::-1], out_file_pred)
+
         if out_file is not None:
             mmcv.imwrite(drawn_img[..., ::-1], out_file)
-        else:
+        elif out_file_gt is None and out_file_pred is None:
             self.add_image(name, drawn_img, step)
 
 
